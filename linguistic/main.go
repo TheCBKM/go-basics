@@ -32,7 +32,7 @@ func getLanguages(url string) {
 
 func main() {
 
-	url := "https://github.com/thecbkm/Teach_IT"
+	url := "https://github.com/TheCBKM/go-basics"
 
 	strs := strings.Split(url, "/")
 	if len(strs) != 5 {
