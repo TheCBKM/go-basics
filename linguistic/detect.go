@@ -21,10 +21,9 @@ func main() {
 	}
 	var result = map[string]int{}
 	for _, file := range files {
-		lang := enry.GetLanguage(file, []byte("<cpp-code>"))
-		if len(lang) > 0 {
+		lang, safe := enry.GetLanguageByExtension(file)
+		if len(lang) > 0 && safe {
 			result[lang]++
-
 		}
 	}
 	fmt.Println(result)
