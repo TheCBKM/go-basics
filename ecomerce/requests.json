@@ -1,0 +1,57 @@
+{
+
+    "Name": "Men",
+    "Categorys": [
+        {
+
+    "Name": "Shirt",
+    "Categorys": [],
+    "Products": [
+        {
+            "Name": "P2",
+            "Description": "",
+            "ImageURL": "",
+            "Variants": [
+                {
+                    "Name": "v2",
+                    "MRP": 0,
+                    "DiscountPrice": 0,
+                    "Size": 0,
+                    "Colour": ""
+                }
+            ]
+        }
+    ]
+}
+    ],
+    "Products": [
+        {
+            "Name": "P1",
+            "Description": "",
+            "ImageURL": "",
+            "Variants": [
+                {
+                    "Name": "v1",
+                    "MRP": 0,
+                    "DiscountPrice": 0,
+                    "Size": 0,
+                    "Colour": ""
+                }
+            ]
+        },
+         {
+            "Name": "P3",
+            "Description": "",
+            "ImageURL": "",
+            "Variants": [
+                {
+                    "Name": "v3",
+                    "MRP": 0,
+                    "DiscountPrice": 0,
+                    "Size": 0,
+                    "Colour": ""
+                }
+            ]
+        }
+    ]
+}
