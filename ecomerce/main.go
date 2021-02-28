@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+
+	models "ecomerce/models"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -15,6 +15,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+//Postgres data
 const (
 	host     = "localhost"
 	port     = 5432
@@ -23,111 +24,68 @@ const (
 	dbname   = "practice_db"
 )
 
+//Initial data
 var (
-	categories = []Category{
+	categories = []models.Category{
 		{Name: "Men"},
 		{Name: "Women"},
 	}
 
-	products = []Product{
+	products = []models.Product{
 		{Name: "P1", CategoryID: 1},
 		{Name: "P2", CategoryID: 2},
+		{Name: "P3", CategoryID: 1},
+		{Name: "P4", CategoryID: 2},
 	}
 
-	variant = []Variant{
-		{Name: "v1", ProductID: 1},
-		{Name: "v22", ProductID: 2},
+	variant = []models.Variant{
+		{Name: "v1", ProductID: 1, MRP: 300},
+		{Name: "v2", ProductID: 2, MRP: 200},
 	}
 )
-
-var db *gorm.DB
-var err error
 
 func main() {
 	// Connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
-	db, err = gorm.Open("postgres", psqlInfo)
+	db, err := gorm.Open("postgres", psqlInfo)
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 	log.Println("DB connected")
 	defer db.Close()
+	//Migrate DB
+	db.AutoMigrate(&models.Category{})
+	db.AutoMigrate(&models.Product{})
+	db.AutoMigrate(&models.Variant{})
+	//Preload all pointers
+	db = db.Set("gorm:auto_preload", true)
+	//inset data
+	for index := range categories {
+		categories[index].Insert(db)
+	}
 
-	db.AutoMigrate(&Category{})
-	db.AutoMigrate(&Product{})
-	db.AutoMigrate(&Variant{})
+	for index := range products {
+		products[index].Insert(db)
+	}
 
-	// for index := range categories {
-	// 	categories[index].Insert(db)
-	// }
-
-	// for index := range products {
-	// 	products[index].Insert(db)
-	// }
-
-	// for index := range variant {
-	// 	variant[index].Insert(db)
-	// }
+	for index := range variant {
+		variant[index].Insert(db)
+	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/get/category/{id}", getCategory).Methods("GET")
-	router.HandleFunc("/get/product/{id}", getProduct).Methods("GET")
-	router.HandleFunc("/get/variant/{id}", getVariant).Methods("GET")
-	router.HandleFunc("/create/category", create).Methods("POST")
+	c := models.Category{}
+	p := models.Product{}
+	v := models.Variant{}
+
+	c.RegisterHandlers(router, db)
+	p.RegisterHandlers(router, db)
+	v.RegisterHandlers(router, db)
 
 	handler := cors.Default().Handler(router)
+	log.Println("Hosted on localhost:8080")
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", handler))
 
-}
-
-func create(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	c := Category{}
-	log.Println("WOW")
-	if err := decoder.Decode(&c); err != nil {
-		log.Panic(err)
-		return
-	}
-	log.Println(c)
-	defer r.Body.Close()
-
-	c.Insert(db)
-	json.NewEncoder(w).Encode("Done")
-
-}
-
-func getCategory(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	c := Category{}
-	y, e := strconv.Atoi(params["id"])
-	if e == nil {
-		fmt.Printf("%T \n %v", y, y)
-	}
-	c.Get(y, db)
-	json.NewEncoder(w).Encode(&c)
-}
-
-func getProduct(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	c := Product{}
-	y, e := strconv.Atoi(params["id"])
-	if e == nil {
-		fmt.Printf("%T \n %v", y, y)
-	}
-	c.Get(y, db)
-	json.NewEncoder(w).Encode(&c)
-}
-
-func getVariant(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	c := Variant{}
-	y, e := strconv.Atoi(params["id"])
-	if e == nil {
-		fmt.Printf("%T \n %v", y, y)
-	}
-	c.Get(y, db)
-	json.NewEncoder(w).Encode(&c)
 }

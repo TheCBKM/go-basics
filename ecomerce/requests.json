@@ -1,19 +1,77 @@
 {
 
-    "Name": "Men",
+    "Name": "C1",
     "Categorys": [
         {
 
-    "Name": "Shirt",
-    "Categorys": [],
+    "Name": "C2",
+    "Categorys": [
+        {
+
+            "Name": "C3",
+            "Categorys": [
+                {
+        
+            "Name": "C4",
+            "Categorys": [],
+            "Products": [
+                {
+                    "Name": "P4",
+                    "Description": "",
+                    "ImageURL": "",
+                    "Variants": [
+                        {
+                            "Name": "V4",
+                            "MRP": 0,
+                            "DiscountPrice": 0,
+                            "Size": 0,
+                            "Colour": ""
+                        }
+                    ]
+                }
+            ]
+        }
+            ],
+            "Products": [
+                {
+                    "Name": "P5",
+                    "Description": "",
+                    "ImageURL": "",
+                    "Variants": [
+                        {
+                            "Name": "V5",
+                            "MRP": 0,
+                            "DiscountPrice": 0,
+                            "Size": 0,
+                            "Colour": ""
+                        }
+                    ]
+                },
+                 {
+                    "Name": "P6",
+                    "Description": "",
+                    "ImageURL": "",
+                    "Variants": [
+                        {
+                            "Name": "V6",
+                            "MRP": 0,
+                            "DiscountPrice": 0,
+                            "Size": 0,
+                            "Colour": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
     "Products": [
         {
-            "Name": "P2",
+            "Name": "P1",
             "Description": "",
             "ImageURL": "",
             "Variants": [
                 {
-                    "Name": "v2",
+                    "Name": "V1",
                     "MRP": 0,
                     "DiscountPrice": 0,
                     "Size": 0,
@@ -26,12 +84,12 @@
     ],
     "Products": [
         {
-            "Name": "P1",
+            "Name": "P2",
             "Description": "",
             "ImageURL": "",
             "Variants": [
                 {
-                    "Name": "v1",
+                    "Name": "V2",
                     "MRP": 0,
                     "DiscountPrice": 0,
                     "Size": 0,
@@ -45,13 +103,36 @@
             "ImageURL": "",
             "Variants": [
                 {
-                    "Name": "v3",
+                    "Name": "V3",
                     "MRP": 0,
                     "DiscountPrice": 0,
                     "Size": 0,
                     "Colour": ""
                 }
             ]
+        }
+    ]
+}
+
+
+{           "CategoryID":1,
+    "Name": "P9",
+    "Description": "",
+    "ImageURL": "",
+    "Variants": [
+        {
+            "Name": "V9",
+            "MRP": 0,
+            "DiscountPrice": 0,
+            "Size": 0,
+            "Colour": ""
+        },
+          {
+            "Name": "V10",
+            "MRP": 0,
+            "DiscountPrice": 0,
+            "Size": 0,
+            "Colour": ""
         }
     ]
 }
