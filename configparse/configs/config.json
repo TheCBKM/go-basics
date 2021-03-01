@@ -1,5 +1,5 @@
 {
-    "host"     : "localhost",
+    "host"     : "fromjson",
 	"port"     : 1234,
 	"user"     : "rajaram",
 	"password" : "rajaram"
