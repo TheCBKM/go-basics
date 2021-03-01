@@ -21,7 +21,7 @@ type conf struct {
 	Dbname   string `yaml:"dbname" json:"dbname"`
 }
 
-func setConf(name, path string) {
+func setConf(name, path string) conf {
 	//call to set default values
 	setDefaults()
 	//set file path and name
@@ -38,6 +38,7 @@ func setConf(name, path string) {
 		log.Panicf("Unable to decode into struct, %v", err)
 	}
 	log.Println(c)
+	return c
 }
 
 func setDefaults() {
