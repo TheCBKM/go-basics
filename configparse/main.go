@@ -42,21 +42,21 @@ type Config struct {
 	LogTimeFormat string `yaml:"log_time_format" json:"log_time_format"`
 }
 
-const defaultJSON = `{
-    "grpc_port": "8082",
-    "http_port": "1234",
-    "graphql_port": "1111",
-    "datastore_db_host": "127.0.0.2",
-    "datastore_db_user": "rajaram",
-    "datastore_db_password": "pas123",
-    "datastore_db_schema": "schema",
-    "log_level": 1,
-    "log_time_format": "hh:mm:ss"
-}`
+var defaults = map[string]interface{}{
+	"grpc_port":             "3000",
+	"http_port":             "3000",
+	"graphql_port":          "3000",
+	"datastore_db_host":     "127.0.0.2",
+	"datastore_db_user":     "datastore_db_user",
+	"datastore_db_password": "datastore_db_password",
+	"datastore_db_schema":   "datastore_db_schema",
+	"log_level":             10,
+	"log_time_format":       "hh:mm:ss",
+}
 
 func setConf(name, path string, env bool) {
 	//call to set default values
-	// setDefaults()
+	setDefaults()
 	if env {
 		viper.SetConfigFile(".env")
 
@@ -106,13 +106,14 @@ func parse(configuration *Config, resp map[string]interface{}) *Config {
 }
 
 func setDefaults() {
-	viper.SetDefault("port", "8080")
-	viper.SetDefault("user", "default_user")
-	viper.SetDefault("host", "default_host")
-	viper.SetDefault("password", "default_pass")
-	viper.SetDefault("dbname", "default_db")
+	for key := range defaults {
+		viper.SetDefault(key, defaults[key])
+	}
+
 }
+
 func main() {
+
 	setConf("config", "./configs", false)
 
 }
