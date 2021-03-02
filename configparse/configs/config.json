@@ -1,5 +1,5 @@
 {
-    "grpc_port": "8081",
+    "grpc_port": "8082",
     "http_port": "1234",
     "graphql_port": "1111",
     "datastore_db_host": "127.0.0.2",

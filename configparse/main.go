@@ -10,6 +10,7 @@ package main
 import (
 	"log"
 	"reflect"
+	"strconv"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
@@ -41,12 +42,31 @@ type Config struct {
 	LogTimeFormat string `yaml:"log_time_format" json:"log_time_format"`
 }
 
-func setConf(name, path string) {
+const defaultJSON = `{
+    "grpc_port": "8082",
+    "http_port": "1234",
+    "graphql_port": "1111",
+    "datastore_db_host": "127.0.0.2",
+    "datastore_db_user": "rajaram",
+    "datastore_db_password": "pas123",
+    "datastore_db_schema": "schema",
+    "log_level": 1,
+    "log_time_format": "hh:mm:ss"
+}`
+
+func setConf(name, path string, env bool) {
 	//call to set default values
-	setDefaults()
-	//set file path and name
-	viper.SetConfigName(name)
-	viper.AddConfigPath(path)
+	// setDefaults()
+	if env {
+		viper.SetConfigFile(".env")
+
+	} else {
+		//set file path and name
+		viper.SetConfigName(name)
+		viper.AddConfigPath(path)
+
+	}
+
 	//check for file
 	if err := viper.ReadInConfig(); err != nil {
 		log.Panicf("Error reading config file, %s", err)
@@ -60,6 +80,7 @@ func setConf(name, path string) {
 	}
 	parse(&configuration, c)
 	log.Println(configuration)
+	log.Println(viper.Get("grpc_port"))
 
 }
 
@@ -68,8 +89,16 @@ func parse(configuration *Config, resp map[string]interface{}) *Config {
 	t := reflect.TypeOf(*configuration)
 	for i := 0; i < 9; i++ {
 		field := t.Field(i)
+		if resp[field.Tag.Get("json")] != nil {
+			if field.Tag.Get("json") == "log_level" && reflect.TypeOf(resp[field.Tag.Get("json")]) == reflect.TypeOf("string") {
+				i, _ := strconv.Atoi(resp[field.Tag.Get("json")].(string))
+				result[field.Name] = i
+			} else {
 
-		result[field.Name] = resp[field.Tag.Get("json")]
+				result[field.Name] = resp[field.Tag.Get("json")]
+
+			}
+		}
 	}
 	mapstructure.Decode(result, &configuration)
 	return configuration
@@ -84,5 +113,6 @@ func setDefaults() {
 	viper.SetDefault("dbname", "default_db")
 }
 func main() {
-	setConf("config", "./configs")
+	setConf("config", "./configs", false)
+
 }
