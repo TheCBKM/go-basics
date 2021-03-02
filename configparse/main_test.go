@@ -7,6 +7,52 @@ import (
 	"testing"
 )
 
+func TestPanic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+	setConf("config", "./configs")
+}
+
+func TestPanicJSON(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+
+	createFile("./configs/config.json")
+
+	var file, err = os.OpenFile("./configs/config.json", os.O_RDWR, 0644)
+	if isError(err) {
+		return
+	}
+	defer file.Close()
+
+	// Write some text line-by-line to file.
+	_, err = file.WriteString(`{
+		"host"     : "fromjson",
+		"port"     : 1234,
+		"user"     : "rajaram",
+		"password" : [1,2,3]
+	}`)
+	if isError(err) {
+		return
+	}
+
+	// Save file changes.
+	err = file.Sync()
+	if isError(err) {
+		return
+	}
+
+	fmt.Println("File Updated Successfully.")
+	setConf("config", "./configs")
+	deleteFile("./configs/config.json")
+
+}
 func TestJSON(t *testing.T) {
 	createFile("./configs/config.json")
 	createJSON()
