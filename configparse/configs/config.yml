@@ -5,4 +5,5 @@ datastore_db_host: "127.0.0.1"
 datastore_db_user: "rajaram"
 datastore_db_password: "pas123"
 datastore_db_schema: "schema"
-log_level: 2
+log_level: 1
+

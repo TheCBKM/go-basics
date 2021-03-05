@@ -8,12 +8,18 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"log"
+	"path/filepath"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 // Config is configuration for Server
@@ -54,34 +60,32 @@ var defaults = map[string]interface{}{
 	"log_time_format":       "hh:mm:ss",
 }
 
-func setConf(name, path string, env bool) {
-	//call to set default values
-	setDefaults()
-	if env {
-		viper.SetConfigFile(".env")
+func setConf(configuration *Config, path string) {
+	file, err := ReadFile(path)
+	extension := filepath.Ext(path)
 
-	} else {
-		//set file path and name
-		viper.SetConfigName(name)
-		viper.AddConfigPath(path)
-
+	if err != nil {
+		log.Panicf("unable to read file, %v", err)
 	}
-
-	//check for file
-	if err := viper.ReadInConfig(); err != nil {
-		log.Panicf("Error reading config file, %s", err)
-	}
-	//deqode to Config struct
 	var c map[string]interface{}
-	var configuration Config
-	err := viper.Unmarshal(&c)
+	if extension == ".json" {
+		err = json.Unmarshal(file, &c)
+	} else if extension == ".yml" {
+		err = yaml.Unmarshal(file, &c)
+	} else if extension == ".env" {
+		c = ParseENV(string(file))
+	}
 	if err != nil {
 		log.Panicf("Unable to decode into struct, %v", err)
 	}
-	parse(&configuration, c)
-	log.Println(configuration)
-	log.Println(viper.Get("grpc_port"))
 
+	var defaultc map[string]interface{}
+	err = viper.Unmarshal(&defaultc)
+	if err != nil {
+		log.Panicf("Unable to decode into struct, %v", err)
+	}
+	parse(configuration, defaultc)
+	parse(configuration, c)
 }
 
 func parse(configuration *Config, resp map[string]interface{}) *Config {
@@ -109,11 +113,41 @@ func setDefaults() {
 	for key := range defaults {
 		viper.SetDefault(key, defaults[key])
 	}
+}
 
+func ParseENV(file string) map[string]interface{} {
+	output := map[string]interface{}{}
+	for _, line := range strings.Split(file, "\n") {
+		data := strings.Split(line, "=")
+		if len(data) == 2 {
+			data[1]=strings.Replace(data[1],"\"","",-1)
+			output[strings.ToLower(strings.Trim(data[0], "\""))] = strings.TrimSpace(data[1])
+		}
+	}
+	return output
+}
+
+func CheckExist(path string) (bool, []string, error) {
+	str, err := filepath.Glob(path)
+	if len(str) > 0 {
+		return true, str, err
+	} else {
+		return false, str, err
+	}
+}
+func ReadFile(path string) ([]byte, error) {
+	existed, _, _ := CheckExist(path)
+	if existed {
+		dat, err := ioutil.ReadFile(path)
+		return dat, err
+	} else {
+		return nil, errors.New("file not exists")
+	}
 }
 
 func main() {
-
-	setConf("config", "./configs", false)
-
+	setDefaults()
+	conf := Config{}
+	setConf(&conf, "./configs/.env")
+	log.Println(conf)
 }
